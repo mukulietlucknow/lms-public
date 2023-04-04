@@ -1,0 +1,23 @@
+FROM ubuntu:latest
+
+RUN apt-get -y update && apt-get -y install nginx
+
+RUN apt-get install --yes curl
+RUN curl --silent --location https://deb.nodesource.com/setup_16.x | bash -
+RUN apt-get install --yes nodejs
+RUN apt-get install --yes build-essential
+RUN apt-get install -y systemd systemd-sysv dbus dbus-user-session
+
+
+WORKDIR /home/app
+COPY . .
+RUN npm install
+RUN npm run build
+# CMD [ "rm","-f","/etc/nginx/sites-available/default" ]
+COPY default /etc/nginx/sites-available/default
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
